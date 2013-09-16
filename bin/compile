@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -e
+
+function say {
+  echo "-----> $1"
+}
+
+cd "$(dirname "$0")"
+cd ..
+BUILDPACK_DIR="$(pwd)"
+BUILD_DIR="$1"
+CACHE_DIR="$2"
+
+cd "$BUILD_DIR"
+
+# include files beginning with . when globbing
+shopt -s dotglob
+
+# move everything into the htdocs/ under the application root
+mkdir "$CACHE_DIR/htdocs"
+mv * "$CACHE_DIR/htdocs"
+mv "$CACHE_DIR/htdocs" .
+
+# download apache
+say "Installing Apache 2.2.25"
+curl --silent --max-time 60 --location "https://heroku-buildpack-php.s3.amazonaws.com/" | tar xz
+
+cp "$BUILDPACK_DIR/conf/httpd.conf" "$BUILD_DIR/apache/conf/httpd.conf"
+
+cp "$BUILDPACK_DIR/start.sh" /app
+

@@ -1,0 +1,4 @@
+#!/usr/bin/env cat
+
+default_process_types:
+  web: ./start.sh
